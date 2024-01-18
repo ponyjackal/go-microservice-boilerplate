@@ -31,6 +31,9 @@ prod:
 	docker-compose -f docker-compose-staging.yml down
 	docker-compose -f docker-compose-staging.yml up	
 
+production:
+	docker-compose -f docker-compose-prod.yml up -d --build
+
 clean:
 	docker-compose -f docker-compose-prod.yml down -v
 	docker-compose -f docker-compose-dev.yml down -v
