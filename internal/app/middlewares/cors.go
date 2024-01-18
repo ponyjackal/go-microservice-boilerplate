@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"product-service/pkg/logger"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )

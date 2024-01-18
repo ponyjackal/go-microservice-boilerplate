@@ -3,7 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
-	"product-service/pkg/logger"
+
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
 )
 
 type ServerConfiguration struct {

@@ -1,9 +1,9 @@
 package seeds
 
 import (
-	"product-service/internal/adapters/database"
-	"product-service/internal/domain/models"
-	"product-service/pkg/logger"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/adapters/database"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/models"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
 )
 
 func SeedData() error {

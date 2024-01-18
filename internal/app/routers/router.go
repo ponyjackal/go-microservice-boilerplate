@@ -2,9 +2,10 @@ package routers
 
 import (
 	"os"
-	"product-service/internal/app/middlewares"
-	"product-service/internal/domain/services"
 	"strconv"
+
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/app/middlewares"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/services"
 
 	"github.com/gin-gonic/gin"
 )

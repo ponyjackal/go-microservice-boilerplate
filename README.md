@@ -18,7 +18,6 @@ The purpose of this boilerplate is to provide a robust starting point for buildi
   - [Develop Application in Docker with Live Reload](#develop-application-in-docker-with-live-reload)
 - [Middlewares](#middlewares)
 - [Boilerplate Structure](#boilerplate-structure)
-- [Code Examples](#examples)
 - [Let's Build an API](#lets-build-an-api)
 - [Deployment](#deployment)
   - [Container Development Build](#container-development-build)
@@ -172,10 +171,6 @@ router.Use(middleware.CORSMiddleware())
 ├── main.go
 ├── Makefile
 </pre>
-
-### Examples
-
-- More Example [product-service-examples](https://github.com/akmamun/product-service-examples)
 
 ### Let's Build an API
 

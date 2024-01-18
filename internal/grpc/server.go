@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"os"
 
-	_ "product-service/docs"
-	"product-service/internal/domain/services"
-	"product-service/pkg/logger"
+	_ "github.com/ponyjackal/go-microservice-boilerplate/docs"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/services"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
 
 	// protobuf
-	ServiceServer "product-service/proto/service"
-	pbTag "product-service/proto/tag"
+	ServiceServer "github.com/ponyjackal/go-microservice-boilerplate/proto/service"
+	pbTag "github.com/ponyjackal/go-microservice-boilerplate/proto/tag"
 
 	"github.com/bufbuild/protovalidate-go"
 	"github.com/golang/protobuf/ptypes/empty"
@@ -31,7 +31,7 @@ type server struct {
 	validator  *protovalidate.Validator
 }
 
-// GetTags implements service.ProductServiceServer
+// GetTags implements service.ServiceServer
 func (s *server) GetTags(ctx context.Context, query *pbTag.GetTagsQuery) (*pbTag.GetTagsResponse, error) {
 	response, err := s.tagService.GetTags(query.Name)
 	if err != nil {
@@ -41,7 +41,7 @@ func (s *server) GetTags(ctx context.Context, query *pbTag.GetTagsQuery) (*pbTag
 	return response, nil
 }
 
-// GetTagById implements service.ProductServiceServer
+// GetTagById implements service.ServiceServer
 func (s *server) GetTagById(ctx context.Context, request *pbTag.TagId) (*pbTag.Tag, error) {
 	tag, err := s.tagService.GetTagById(request)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *server) GetTagById(ctx context.Context, request *pbTag.TagId) (*pbTag.T
 	return tag, err
 }
 
-// SaveTag implements service.ProductServiceServer
+// SaveTag implements service.ServiceServer
 func (s *server) SaveTag(ctx context.Context, request *pbTag.SaveTagRequest) (*pbTag.Tag, error) {
 	response, err := s.tagService.SaveTag(request)
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *server) SaveTag(ctx context.Context, request *pbTag.SaveTagRequest) (*p
 	return response, nil
 }
 
-// UpdateTag implements service.ProductServiceServer
+// UpdateTag implements service.ServiceServer
 func (s *server) UpdateTag(ctx context.Context, request *pbTag.UpdateTagRequest) (*pbTag.Tag, error) {
 	response, err := s.tagService.UpdateTag(request)
 	if err != nil {
@@ -74,7 +74,7 @@ func (s *server) UpdateTag(ctx context.Context, request *pbTag.UpdateTagRequest)
 	return response, nil
 }
 
-// DeleteTag implements service.ProductServiceServer
+// DeleteTag implements service.ServiceServer
 func (s *server) DeleteTag(ctx context.Context, request *pbTag.TagId) (*emptypb.Empty, error) {
 	err := s.tagService.DeleteTag(request)
 	if err != nil {
@@ -203,8 +203,8 @@ func StartServer(
 	// }
 
 	// gwmux := runtime.NewServeMux()
-	// Register ProductService handler
-	// err = ProductServiceServer.RegisterProductServiceHandler(context.Background(), gwmux, conn)
+	// Register Service handler
+	// err = ServiceServer.RegisterServiceHandler(context.Background(), gwmux, conn)
 	// if err != nil {
 	// 	logger.Errorf("Failed to register gateway:", err)
 	// }
@@ -213,7 +213,7 @@ func StartServer(
 	// httpMux := http.NewServeMux()
 	// httpMux.Handle("/", gwmux)
 
-	// swaggerFiles.ReadFile("../docs/product-service.swagger.json")
+	// swaggerFiles.ReadFile("../docs/service.swagger.json")
 	// httpMux.Handle("/docs/", loggingHandler(swaggerFiles.Handler, "swagger doc"))
 
 	// gwServer := &http.Server{

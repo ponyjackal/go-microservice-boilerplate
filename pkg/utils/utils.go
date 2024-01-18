@@ -3,10 +3,11 @@ package utils
 import (
 	"net/http"
 	"path/filepath"
-	"product-service/pkg/logger"
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"

@@ -1,12 +1,12 @@
 package services
 
 import (
-	"product-service/internal/domain/models"
-	"product-service/internal/domain/repositories"
-	"product-service/pkg/logger"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/models"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/repositories"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
 
 	// protobuf
-	pbTag "product-service/proto/tag"
+	pbTag "github.com/ponyjackal/go-microservice-boilerplate/proto/tag"
 
 	"github.com/jinzhu/copier"
 	"google.golang.org/grpc/codes"

@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: product-service/proto
+    default: github.com/ponyjackal/go-microservice-boilerplate/proto
     except:
       - buf.build/googleapis/googleapis
       - buf.build/grpc-ecosystem/grpc-gateway

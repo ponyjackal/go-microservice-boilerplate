@@ -1,4 +1,4 @@
-module product-service
+module github.com/ponyjackal/go-microservice-boilerplate
 
 go 1.17
 

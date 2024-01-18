@@ -3,10 +3,10 @@ package routers
 import (
 	"net/http"
 
-	"product-service/internal/app/controllers"
-	"product-service/internal/domain/services"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/app/controllers"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/services"
 
-	_ "product-service/docs"
+	_ "github.com/ponyjackal/go-microservice-boilerplate/docs"
 
 	"github.com/gin-gonic/gin"
 )

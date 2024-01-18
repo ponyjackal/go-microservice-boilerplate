@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"net/http"
-	"product-service/internal/domain/services"
-	"product-service/pkg/logger"
-	"product-service/pkg/utils"
-	pbTag "product-service/proto/tag"
+
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/services"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/utils"
+	pbTag "github.com/ponyjackal/go-microservice-boilerplate/proto/tag"
 
 	"github.com/bufbuild/protovalidate-go"
 	"github.com/gin-gonic/gin"

@@ -12,10 +12,10 @@ import (
 	"context"
 	"io"
 	"net/http"
-	"product-service/proto/tag"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/utilities"
+	"github.com/ponyjackal/go-microservice-boilerplate/proto/tag"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"

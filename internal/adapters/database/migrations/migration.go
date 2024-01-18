@@ -4,8 +4,8 @@ import (
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
 
-	"product-service/internal/adapters/database"
-	"product-service/internal/domain/models"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/adapters/database"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/models"
 )
 
 var migrations = []*gormigrate.Migration{}
