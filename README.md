@@ -195,28 +195,46 @@ func (e *Example) TableName() string {
 }
 ```
 
-2. Add Model to [migration](pkg/database/migration.go)
+2. Add Model to [migration](internal/adapters/database/migratins/migration.go)
 
 ```go
 package migrations
 
+package migrations
+
 import (
-	"product-service/internal/adapters/database"
-	"product-service/internal/domain/models"
+	"github.com/go-gormigrate/gormigrate/v2"
+	"gorm.io/gorm"
+
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/adapters/database"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/models"
 )
 
-// Migrate Add list of model add for migrations
+var migrations = []*gormigrate.Migration{}
+
 func Migrate() {
-	var migrationModels = []interface{}{&models.Example{}}
-	err := database.DB.AutoMigrate(migrationModels...)
-	if err != nil {
-		return
+	m := gormigrate.New(database.DB, gormigrate.DefaultOptions, migrations)
+
+	m.InitSchema(func(tx *gorm.DB) error {
+		err := tx.AutoMigrate(
+			&models.Tag{},
+		)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	// Run the migrations
+	if err := m.Migrate(); err != nil {
+		panic(err)
 	}
 }
 
 ```
 
-3. [controller](controllers) folder add a file `example_controller.go`
+3. [controller](controllers) folder add a file `tag_controller.go`
 
 - Create API Endpoint
 - Write Database Operation in Repository and use them from controller
@@ -225,48 +243,220 @@ func Migrate() {
 package controllers
 
 import (
-  "product-service/internal/domain/models"
-  "product-service/internal/domain/repositories"
-  "github.com/gin-gonic/gin"
-  "net/http"
+	"net/http"
+
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/services"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/logger"
+	"github.com/ponyjackal/go-microservice-boilerplate/pkg/utils"
+	pbTag "github.com/ponyjackal/go-microservice-boilerplate/proto/tag"
+
+	"github.com/bufbuild/protovalidate-go"
+	"github.com/gin-gonic/gin"
 )
 
-func GetData(ctx *gin.Context) {
-  var example []*models.Example
-  repository.Get(&example)
-  ctx.JSON(http.StatusOK, &example)
+type TagController struct {
+	tagService *services.TagService
+	validator  *protovalidate.Validator
+}
 
+func NewTagController(tagService *services.TagService) *TagController {
+	// Create a new validator
+	validator, err := protovalidate.New()
+	if err != nil {
+		logger.Errorf("failed to initialize validator: %v", err)
+	}
+
+	return &TagController{
+		tagService: tagService,
+		validator:  validator,
+	}
 }
-func Create(ctx *gin.Context) {
-  example := new(models.Example)
-  repository.Save(&example)
-  ctx.JSON(http.StatusOK, &example)
+
+// GetTags godoc
+// @Summary Retrieve a list of tags
+// @Description Get a list of tags filtered by the name parameter
+// @Tags Tags
+// @Accept json
+// @Produce json
+// @Param name query string false "Name of the tag to filter by"
+// @Success 200 {object} pbTag.GetTagsResponse "Successful retrieval of tags"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /tags [get]
+func (c *TagController) GetTags(ctx *gin.Context) {
+	name := ctx.Query("name")
+
+	response, err := c.tagService.GetTags(name)
+	if err != nil {
+		utils.GRPCErrorHandler(ctx, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, response)
 }
+
+// GetTagById godoc
+// @Summary Retrieve a tag
+// @Description Get tag by id from the database
+// @Tags Tags
+// @Produce json
+// @Param id path string true "Tag ID"
+// @Success 200 {object} pbTag.Tag "Successfully retrieved a tag"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /tags/{id} [get]
+func (c *TagController) GetTagById(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	response, err := c.tagService.GetTagById(&pbTag.TagId{
+		Id: id,
+	})
+	if err != nil {
+		utils.GRPCErrorHandler(ctx, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, response)
+}
+
+// SaveTag godoc
+// @Summary Add a new tag
+// @Description Add a tag with the provided information
+// @Tags Tags
+// @Accept json
+// @Produce json
+// @Param tag body pbTag.SaveTagRequest true "Tag Object"
+// @Success 201 {object} models.Tag "Successfully created tag"
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /tags [post]
+func (c *TagController) SaveTag(ctx *gin.Context) {
+	var tagReq pbTag.SaveTagRequest
+
+	if err := ctx.BindJSON(&tagReq); err != nil {
+		logger.Errorf("Invalid request: %s", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err})
+		return
+	}
+	// Validate the request
+	if err := c.validator.Validate(&tagReq); err != nil {
+		logger.Errorf("Invalid request: %s", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err})
+		return
+	}
+
+	response, err := c.tagService.SaveTag(&tagReq)
+	if err != nil {
+		utils.GRPCErrorHandler(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, response)
+}
+
+// UpdateTag godoc
+// @Summary Update tag
+// @Description Update a tag with the provided information
+// @Tags Tags
+// @Accept json
+// @Produce json
+// @Param id path string true "Tag ID"
+// @Param tag body pbTag.SaveTagRequest true "Tag Object"
+// @Success 200 {object} pbTag.Tag "Successfully updated a tag"
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /tags/{id} [put]
+func (c *TagController) UpdateTag(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var tagReq pbTag.SaveTagRequest
+	if err := ctx.BindJSON(&tagReq); err != nil {
+		logger.Errorf("Invalid request: %s", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request", "error": err})
+		return
+	}
+
+	tag, err := c.tagService.UpdateTag(&pbTag.UpdateTagRequest{
+		Id:     id,
+		TagReq: &tagReq,
+	})
+	if err != nil {
+		utils.GRPCErrorHandler(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, &tag)
+}
+
+// DeleteTag godoc
+// @Summary Delete tag
+// @Description Delete a tag with the provided information
+// @Tags Tags
+// @Accept json
+// @Produce json
+// @Param id path string true "Tag ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /tags/{id} [delete]
+func (c *TagController) DeleteTag(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	err := c.tagService.DeleteTag(&pbTag.TagId{
+		Id: id,
+	})
+	if err != nil {
+		utils.GRPCErrorHandler(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Tag deleted successfully"})
+}
+
 ```
 
-4. [routers](routers) folder add a file `example.go`
+4. [routers](routers) folder add a new route in `index.go`
 
 ```go
 package routers
 
 import (
-  "product-service/internal/app/controllers"
-  "github.com/gin-gonic/gin"
-  "net/http"
+	"net/http"
+
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/app/controllers"
+	"github.com/ponyjackal/go-microservice-boilerplate/internal/domain/services"
+
+	_ "github.com/ponyjackal/go-microservice-boilerplate/docs"
+
+	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(route *gin.Engine) {
-  route.GET("/health", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, gin.H{"live": "ok"}) })
-  //added new
-  route.GET("/v1/example/", controllers.GetData)
-  route.POST("/v1/example/", controllers.Create)
+func RegisterRoutes(
+	route *gin.Engine,
+	tagService *services.TagService,
+) {
+	/* Controllers */
+	tagController := controllers.NewTagController(tagService)
 
-  //Add All route
-  //TestRoutes(route)
+	route.NoRoute(func(ctx *gin.Context) {
+		ctx.JSON(http.StatusNotFound, gin.H{"status": http.StatusNotFound, "message": "Route Not Found"})
+	})
+
+	v1 := route.Group("api/v1")
+	{
+		// health check
+		v1.GET("health", func(ctx *gin.Context) { ctx.JSON(http.StatusOK, gin.H{"live": "good"}) })
+		// tags
+		tags := v1.Group("tags")
+		{
+			tags.GET("", tagController.GetTags)
+			tags.GET(":id", tagController.GetTagById)
+			tags.POST("", tagController.SaveTag)
+			tags.PUT(":id", tagController.UpdateTag)
+			tags.DELETE(":id", tagController.DeleteTag)
+		}
+	}
 }
+
 ```
 
-- Congratulation, your new endpoint `0.0.0.0:8000/v1/example/`
+- Congratulation, your new endpoint `0.0.0.0:8000/api/v1/tags`
 
 ### Deployment
 
@@ -301,30 +491,45 @@ server:
     timeout: 100
 ```
 
-- [Server Config](config/server.go)
+- [Server Config](pkg/config/server.go)
 
 ```go
 func ServerConfig() string {
-appServer := fmt.Sprintf("%s:%s", os.Getenv("server.host"), os.Getenv("server.port"))
-return appServer
+	appServer := fmt.Sprintf("%s:%s", os.Getenv("SERVER_HOST"), os.Getenv("SERVER_PORT"))
+	logger.Infof("Server Running at : %s", appServer)
+	return appServer
 }
+
 ```
 
-- [DB Config](config/db.go)
+- [DB Config](pkg/config/db.go)
 
 ```go
-func DbConfiguration() string {
+func DbConfiguration() (string, string) {
+	masterDBName := os.Getenv("MASTER_DB_NAME")
+	masterDBUser := os.Getenv("MASTER_DB_USER")
+	masterDBPassword := os.Getenv("MASTER_DB_PASSWORD")
+	masterDBHost := os.Getenv("MASTER_DB_HOST")
+	masterDBPort := os.Getenv("MASTER_DB_PORT")
+	masterDBSslMode := os.Getenv("MASTER_SSL_MODE")
 
-dbname := os.Getenv("database.dbname")
-username := os.Getenv("database.username")
-password := os.Getenv("database.password")
-host := os.Getenv("database.host")
-port := os.Getenv("database.port")
-sslMode := os.Getenv("database.ssl_mode")
+	replicaDBName := os.Getenv("REPLICA_DB_NAME")
+	replicaDBUser := os.Getenv("REPLICA_DB_USER")
+	replicaDBPassword := os.Getenv("REPLICA_DB_PASSWORD")
+	replicaDBHost := os.Getenv("REPLICA_DB_HOST")
+	replicaDBPort := os.Getenv("REPLICA_DB_PORT")
+	replicaDBSslMode := os.Getenv("REPLICA_SSL_MODE")
 
-dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
-host, username, password, dbname, port, sslMode)
-return dsn
+	masterDBDSN := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		masterDBHost, masterDBUser, masterDBPassword, masterDBName, masterDBPort, masterDBSslMode,
+	)
+
+	replicaDBDSN := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		replicaDBHost, replicaDBUser, replicaDBPassword, replicaDBName, replicaDBPort, replicaDBSslMode,
+	)
+	return masterDBDSN, replicaDBDSN
 }
 ```
 
