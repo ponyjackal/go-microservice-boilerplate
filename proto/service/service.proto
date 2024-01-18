@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+option go_package = "service";
+
+package service;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+import "tag/tag.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Service"
+        version: "1.0"
+    };
+    schemes: [HTTP,HTTPS]
+    consumes: "application/json"
+    produces: "application/json"
+    responses: {
+        key: "404"
+        value: {
+            description: "Returned when the resource does not exist."
+            schema: {
+                json_schema: {
+                    type: STRING
+                };
+            };
+        };
+    };
+};
+
+service Service {
+    /** Tag */
+    // obtains tags by name
+    rpc GetTags(tag.GetTagsQuery) returns (tag.GetTagsResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/tags"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get tags",
+            description: "Retrieve tags by name",
+            tags: ["Tags"],
+            produces: ["application/json"]
+        };
+    }
+
+    // obtains tag by id
+    rpc GetTagById(tag.TagId) returns (tag.Tag) {
+        option (google.api.http) = {
+            get: "/api/v1/tags/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get a tag",
+            description: "Retrieve a tag by id",
+            tags: ["Tags"],
+            produces: ["application/json"]
+        };
+    }
+
+    // save tag
+    rpc SaveTag(tag.SaveTagRequest) returns (tag.Tag) {
+        option (google.api.http) = {
+            post: "/api/v1/tags",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Save tag",
+            description: "Create a new tag",
+            tags: ["Tags"],
+            consumes: ["application/json"],
+            produces: ["application/json"]
+        };
+    }
+
+    // update tag
+    rpc UpdateTag(tag.UpdateTagRequest) returns (tag.Tag) {
+        option (google.api.http) = {
+            put: "/api/v1/tags/{id}",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update tag",
+            description: "Update an existing tag",
+            tags: ["Tags"],
+            consumes: ["application/json"],
+            produces: ["application/json"]
+        };
+    }
+
+    // deletes a tag
+    rpc DeleteTag(tag.TagId) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/api/v1/tags/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Remove tag",
+            description: "Remove a tag by ID",
+            tags: ["Tags"],
+            produces: ["application/json"]
+        };
+    }
+}

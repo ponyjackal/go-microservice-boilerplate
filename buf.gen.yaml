@@ -1,0 +1,22 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: product-service/proto
+    except:
+      - buf.build/googleapis/googleapis
+      - buf.build/grpc-ecosystem/grpc-gateway
+      - buf.build/bufbuild/protovalidate
+plugins:
+  - name: go
+    out: proto
+    opt: paths=source_relative
+  - name: go-grpc
+    out: proto
+    opt: paths=source_relative
+  - name: grpc-gateway
+    out: proto
+    opt: paths=source_relative
+  - plugin: buf.build/grpc-ecosystem/openapiv2
+    out: docs
+    opt: allow_merge=true,merge_file_name=grpc_gateway,logtostderr=true

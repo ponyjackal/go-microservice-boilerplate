@@ -1,0 +1,4 @@
+FROM opensearchproject/opensearch:latest
+
+# Install Nori plugin
+RUN ./bin/opensearch-plugin install analysis-nori

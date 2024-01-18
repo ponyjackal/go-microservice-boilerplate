@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+option go_package = "tag";
+
+package tag;
+
+import "buf/validate/validate.proto";
+
+message Tag {
+    string id = 1;
+    // Fields
+    string name = 2;
+}
+
+message GetTagsQuery {
+    string name = 1;
+}
+message GetTagsResponse {
+    repeated Tag tags = 1;
+}
+
+message SaveTagRequest {
+    string name = 1 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
+}
+
+message TagId {
+    string id = 1;
+}
+
+message UpdateTagRequest {
+    string id = 1 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
+    SaveTagRequest tagReq = 2;
+}

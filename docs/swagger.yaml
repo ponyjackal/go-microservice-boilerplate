@@ -1,0 +1,190 @@
+basePath: /api/v1
+definitions:
+  models.Tag:
+    properties:
+      id:
+        type: string
+      name:
+        description: Fields
+        type: string
+    type: object
+  tag.GetTagsResponse:
+    properties:
+      tags:
+        items:
+          $ref: '#/definitions/tag.Tag'
+        type: array
+    type: object
+  tag.SaveTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  tag.Tag:
+    properties:
+      id:
+        type: string
+      name:
+        description: Fields
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /tags:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of tags filtered by the name parameter
+      parameters:
+      - description: Name of the tag to filter by
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful retrieval of tags
+          schema:
+            $ref: '#/definitions/tag.GetTagsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve a list of tags
+      tags:
+      - Tags
+    post:
+      consumes:
+      - application/json
+      description: Add a tag with the provided information
+      parameters:
+      - description: Tag Object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/tag.SaveTagRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created tag
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new tag
+      tags:
+      - Tags
+  /tags/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a tag with the provided information
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete tag
+      tags:
+      - Tags
+    get:
+      description: Get tag by id from the database
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved a tag
+          schema:
+            $ref: '#/definitions/tag.Tag'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Retrieve a tag
+      tags:
+      - Tags
+    put:
+      consumes:
+      - application/json
+      description: Update a tag with the provided information
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tag Object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/tag.SaveTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated a tag
+          schema:
+            $ref: '#/definitions/tag.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update tag
+      tags:
+      - Tags
+swagger: "2.0"

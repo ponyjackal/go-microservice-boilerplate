@@ -1,0 +1,17 @@
+
+syntax = "proto3";
+
+option go_package = "shared";
+
+package shared;
+
+/** Enums */
+enum Status {
+    PENDING = 0;     // Tag is newly created and awaiting review or action
+    IN_REVIEW = 1;   // Tag is currently under review by an admin
+    ON_HOLD = 2;     // Tag review or processing is put on hold
+    APPROVED = 3;    // Tag has been reviewed and approved by an admin
+    REJECTED = 4;    // Tag has been reviewed and rejected by an admin
+    BLOCKED = 5;     // Tag is no longer active, rejected permanently
+    DRAFT = 6;       // Tag is in draft state, not yet submitted for review
+}
