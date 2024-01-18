@@ -1,10 +1,10 @@
-# Go Boilerplate
+# Go Microservices Boilerplate
 
-An API boilerplate written in Golang with Gin Framework and Gorm
+This Go boilerplate project is designed to streamline the development of microservices using gRPC for inter-service communication, Protocol Buffers (protobuf) for data serialization, Gorm as an ORM for database operations, and Gormigrate for database migrations.
 
 ### Motivation
 
-Write restful API with fast development and developer friendly
+The purpose of this boilerplate is to provide a robust starting point for building scalable and efficient microservices in Go. It aims to incorporate best practices and tools for rapid development and high performance.
 
 ## Table of Contents
 
@@ -13,7 +13,6 @@ Write restful API with fast development and developer friendly
   - [ENV Manage](#env-manage)
   - [Server Configuration](#server-configuration)
   - [Database Configuration](#database-configuration)
-  - [PgAdmin](#pg-admin)
 - [Installation](#installation)
   - [Local Setup Instruction](#local-setup-instruction)
   - [Develop Application in Docker with Live Reload](#develop-application-in-docker-with-live-reload)
@@ -73,13 +72,6 @@ REPLICA_SSL_MODE=disable
 - Use [GORM](https://github.com/go-gorm/gorm) as an ORM
 - Use database `MASTER_DB_HOST` value set as `localhost` for local development, and use `postgres_db` for docker development
 
-#### PG Admin
-
-- Check PG Admin on [http://0.0.0.0:5050/browser/](http://0.0.0.0:5050/browser/)
-- Login with Credential Email `admin@admin.com` Password `root`
-- Connect Database Host as `postgres_db`, DB Username and Password as per `.env` set
-- Note: if not configure `.env`, default Username `mamun` and password `123`
-
 ### Installation
 
 #### Local Setup Instruction
@@ -114,38 +106,71 @@ router.Use(middleware.CORSMiddleware())
 
 ### Directory Structure
 
-<pre>├── <font color="#3465A4"><b>config</b></font>
-│   ├── config.go
-│   ├── db.go
-│   └── server.go
-├── <font color="#3465A4"><b>controllers</b></font>
-│   └── example_controller.go
+<pre>├── <font color="#3465A4"><b>internal</b></font>
+│   ├── <font color="#3465A4"><b>adapters</b></font>
+│   │   ├── <font color="#3465A4"><b>database</b></font>
+│   │   │   ├── <font color="#3465A4"><b>migrations</b></font>
+│   │   │   │   └── migration.go
+│   │   │   ├── <font color="#3465A4"><b>seeds</b></font>
+│   │   │   └── database.go
+│   ├── <font color="#3465A4"><b>app</b></font>
+│   │   ├── <font color="#3465A4"><b>controllers</b></font>
+│   │   │   └── tag_controller.go
+│   │   ├── <font color="#3465A4"><b>middlewares</b></font>
+│   │   │   └── cors.go
+│   │   ├── <font color="#3465A4"><b>routers</b></font>
+│   │   │   ├── index.go
+│   │   │   └── router.go
+│   └── <font color="#3465A4"><b>domain</b></font>
+│   │   ├── <font color="#3465A4"><b>models</b></font>
+│   │   │   └── tag_model.go
+│   │   ├── <font color="#3465A4"><b>repositories</b></font>
+│   │   │   └── tag_repository.go
+│   │   ├── <font color="#3465A4"><b>services</b></font>
+│   │   │   └── tag_service.go
+├── <font color="#3465A4"><b>pkg</b></font>
+│   ├── <font color="#3465A4"><b>config</b></font>
+│   │   ├── config.go
+│   │   ├── db.go
+│   │   └── server.go
+│   ├── <font color="#3465A4"><b>constants</b></font>
+│   │   └── constants.go
+│   ├── <font color="#3465A4"><b>logger</b></font>
+│   │   └── logger.go
+│   ├── <font color="#3465A4"><b>types</b></font>
+│   ├── <font color="#3465A4"><b>utils</b></font>
+│   │   └── utils.go
+│   └── <font color="#3465A4"><b>workers</b></font>
+├── <font color="#3465A4"><b>proto</b></font>
+│   ├── <font color="#3465A4"><b>service</b></font>
+│   │   ├── service_grpc.pb
+│   │   ├── service.pb.go
+│   │   ├── service.pb.gw.go
+│   │   └── service.proto
+│   ├── <font color="#3465A4"><b>shared</b></font>
+│   │   ├── shared.pb.go
+│   │   └── shared.proto
+│   ├── <font color="#3465A4"><b>tag</b></font>
+│   │   ├── tag.pb.go
+│   │   └── tag.proto
+│   ├── buf.lock
+│   └── buf.yaml
+├── <font color="#3465A4"><b>docs</b></font>
+│   ├── docs.go
+│   ├── grpc_gateway.go
+│   ├── grpc_gateway.swagger.json
+│   ├── swagger.json
+│   └── swagger.yaml
+├── buf.gen.yaml
 ├── docker-compose-dev.yml
 ├── docker-compose-prod.yml
 ├── Dockerfile
 ├── Dockerfile-dev
 ├── go.mod
 ├── go.sum
-├── <font color="#3465A4"><b>infra</b></font>
-│   ├── <font color="#3465A4"><b>database</b></font>
-│   │   └── database.go
-│   └── <font color="#3465A4"><b>logger</b></font>
-│       └── logger.go
 ├── LICENSE
 ├── main.go
 ├── Makefile
-├── <font color="#3465A4"><b>migrations</b></font>
-│   └── migration.go
-├── <font color="#3465A4"><b>models</b></font>
-│   └── example_model.go
-├── README.md
-├── <font color="#3465A4"><b>repository</b></font>
-│   └── sql_repo.go
-├── <font color="#3465A4"><b>routers</b></font>
-│   ├── index.go
-│   ├── <font color="#3465A4"><b>middleware</b></font>
-│   │   └── cors.go
-│   └── router.go
 </pre>
 
 ### Examples

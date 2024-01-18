@@ -1,8 +1,8 @@
 # Start from golang base image
 FROM golang:1.21-alpine as builder
 
-# Install git and vips dependencies
-RUN apk update && apk add --no-cache git alpine-sdk vips-dev
+# Install git dependencies
+RUN apk update && apk add --no-cache git alpine-sdk
 
 # Working directory
 WORKDIR /app
@@ -23,8 +23,8 @@ RUN --mount=type=cache,target="/root/.cache/go-build" CGO_ENABLED=1 GOOS=linux g
 # Start a new stage from scratch
 FROM alpine:latest
 
-# Install ca-certificates and vips runtime libraries
-RUN apk --no-cache add ca-certificates vips
+# Install ca-certificates runtime libraries
+RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
