@@ -16,7 +16,6 @@ import (
 	pbTag "github.com/ponyjackal/go-microservice-boilerplate/proto/tag"
 
 	"github.com/bufbuild/protovalidate-go"
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 
 	"google.golang.org/grpc"
@@ -82,7 +81,7 @@ func (s *server) DeleteTag(ctx context.Context, request *pbTag.TagId) (*emptypb.
 		return nil, err
 	}
 
-	return &empty.Empty{}, err
+	return &emptypb.Empty{}, err
 }
 
 func newServer(
