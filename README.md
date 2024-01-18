@@ -174,25 +174,33 @@ router.Use(middleware.CORSMiddleware())
 
 ### Let's Build an API
 
-1. [models](models) folder add a new file name `example_model.go`
+1. [models](models) folder add a new file name `tag_model.go`
 
 ```go
 package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
-type Example struct {
-	Id        int        `json:"id"`
-	Data      string     `json:"data" binding:"required"`
-	CreatedAt *time.Time `json:"created_at,string,omitempty"`
-	UpdatedAt *time.Time `json:"updated_at_at,string,omitempty"`
+type Tag struct {
+	ID uuid.UUID `gorm:"type:uuid;column:id;primaryKey;default:gen_random_uuid()" json:"id"`
+	/* Fields */
+	Name string `gorm:"not null;uniqueIndex:unique_tag_name" json:"name"`
+	/* Timestamp */
+	CreatedAt time.Time      `json:"-"`
+	UpdatedAt time.Time      `json:"-"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
-// TableName is Database Table Name of this model
-func (e *Example) TableName() string {
-	return "examples"
+
+// TableName is Database TableName of this model
+func (e *Tag) TableName() string {
+	return "tags"
 }
+
 ```
 
 2. Add Model to [migration](internal/adapters/database/migratins/migration.go)
