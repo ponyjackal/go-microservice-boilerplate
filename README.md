@@ -338,6 +338,8 @@ return dsn
 - `make dev`: make dev for development work
 - `make build`: make build container
 - `make production`: docker production build and up
+- `make protobuf`: generate protobuf go files
+- `make doc`: generate swagger doc
 - `clean`: clean for all clear docker images
 
 ### Use Packages

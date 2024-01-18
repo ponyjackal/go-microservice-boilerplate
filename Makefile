@@ -26,18 +26,10 @@ build:
 	docker-compose -f docker-compose-prod.yml build
 	docker-compose -f docker-compose-dev.yml down build
 
-staging:
-	cp .env.staging .env
-	docker-compose -f docker-compose-staging.yml down
-	docker-compose -f docker-compose-staging.yml up
-
 prod:
 	cp .env.prod .env
 	docker-compose -f docker-compose-staging.yml down
 	docker-compose -f docker-compose-staging.yml up	
-
-production:
-	docker-compose -f docker-compose-prod.yml up -d --build
 
 clean:
 	docker-compose -f docker-compose-prod.yml down -v
