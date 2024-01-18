@@ -80,7 +80,7 @@ Follow these steps:
 - Copy [.env.example](.env.example) as `.env` and configure necessary values
 - To add all dependencies for a package in your module `go get .` in the current directory
 - Locally run `go run main.go` or `go build main.go` and run `./main`
-- Check Application health available on [0.0.0.0:8000/health](http://0.0.0.0:8000/health)
+- Check Application health available on [0.0.0.0:8000/api/v1/health](http://0.0.0.0:8000/api/v1/health)
 
 #### Develop Application in Docker with Live Reload
 
@@ -90,7 +90,7 @@ Follow these steps:
 - Docker Installation for your desire OS https://docs.docker.com/engine/install/ubuntu/
 - Docker Composer Installation https://docs.docker.com/compose/install/
 - Run and Develop `make dev`
-- Check Application health available on [0.0.0.0:8000/health](http://0.0.0.0:8000/health)
+- Check Application health available on [0.0.0.0:8000/api/v1/health](http://0.0.0.0:8000/api/v1/health)
 
 ### Middlewares
 
@@ -174,7 +174,7 @@ router.Use(middleware.CORSMiddleware())
 
 ### Let's Build an API
 
-1. [models](models) folder add a new file name `tag_model.go`
+1. [models](/internal/domain/models/) folder add a new file name `tag_model.go`
 
 ```go
 package models
@@ -242,7 +242,7 @@ func Migrate() {
 
 ```
 
-3. [controller](controllers) folder add a file `tag_controller.go`
+3. [controller](/internal/app/controllers/) folder add a file `tag_controller.go`
 
 - Create API Endpoint
 - Write Database Operation in Repository and use them from controller
@@ -419,7 +419,7 @@ func (c *TagController) DeleteTag(ctx *gin.Context) {
 
 ```
 
-4. [routers](routers) folder add a new route in `index.go`
+4. [routers](/internal/app/routers/) folder add a new route in `index.go`
 
 ```go
 package routers
